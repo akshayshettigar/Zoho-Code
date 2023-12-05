@@ -1,0 +1,44 @@
+response = invokeurl
+[
+url :"https://projectsapi.zoho.in/restapi/portal/" + portalName + "/projects/" + projectId + "/tasks/"
+type :GET
+connection:"zohoprojectcreate"
+];
+taskdata = Map();
+taskdata = response.get("tasks");
+tasklist = List();
+for each task in taskdata
+{
+taskname = Map();
+taskname.put("text",task.get("name"));
+taskname.put("start_date",task.get("start_date_format"));
+taskname.put("end_date",task.get("end_date_format"));
+tasklist.add(taskname);
+}
+htmlcode = ((((((((((((((((((('
+<!DOCTYPE html>' + '<html lang="en">') + '
+
+<head>') + '
+    <meta charset="UTF-8">') + '
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">') + ' <title>Gantt Chart Example</title>') +
+    '
+    <script src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"></script>') + '
+    <link rel="stylesheet" href="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.css">') + ' <style>
+        ') + ' #gantt_container {
+            ') + ' width: 100%;
+            ') + ' height: 500px;
+            ') + '
+        }
+
+        ') + '
+    </style>') + '
+</head>') + '
+
+<body>') + ' <div id="gantt_container"></div>') + '
+    <script>') + '        var tasklist = [') + tasklist.toString()) + ']; ' + '        tasklist.forEach(function (task) { ' + '            task.start_date = new Date(task.start_date); ' + '            task.end_date = new Date(task.end_date); ' + ' }); ' + '        gantt.init("gantt_container"); ' + '        gantt.config.columns = [' + '            { name: "text", label: "Task name", tree: true, width: 150 }, ' + '            { name: "start_date", label: "Start date", align: "center", width: 150 }, ' + '            { name: "end_date", label: "End date", align: "center", width: 150 }' + ']; ' + '        gantt.parse({ data: tasklist, links: [] }); ' + '    </script>
+    ' + '
+</body>' + '
+
+</html>';
+
+return htmlcode;
