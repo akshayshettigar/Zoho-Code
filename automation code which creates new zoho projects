@@ -1,0 +1,69 @@
+createMap = Map();
+projectNameList = list();
+createMap.put("name",ProjName);
+createMap.put("description",Description);
+createMap.put("start_date",startdate.toString("MM-dd-yyyy"));
+createMap.put("end_date",enddate.toString("MM-dd-yyyy"));
+createMap.put("template_id",TemplateID);
+allProjects = invokeurl
+[
+	url :" https://projectsapi.zoho.in/restapi/portal/" + PortalName + "/projects/"
+	type :GET
+	connection:"zohoprojectcreate"
+];
+// info allProjects;
+projectlist = allProjects.get("projects");
+for each  rec in projectlist
+{
+	projectNameList.add(rec.get("name"));
+}
+for each  projectName in projectNameList
+{
+	if(ProjName == projectName)
+	{
+		foundProjectName = ProjName;
+		break;
+	}
+}
+if(isNull(foundProjectName))
+{
+	response = zoho.projects.createProject(PortalName,createMap,"zohoprojectcreate");
+	projectDetails = response.get("projects").toMap();
+	projectId = projectDetails.get("id");
+	// // info updataResponse;
+	projectRes = response.get("projects");
+	for each  rec in projectRes
+	{
+		projid = rec.get("id");
+		projname = rec.get("name");
+	}
+	mp = Map();
+	mp.put("name",ProjName);
+	mp.put("status","active");
+	mp.put("start_date",startdate.toString("MM-dd-yyyy"));
+	mp.put("end_date",enddate.toString("MM-dd-yyyy"));
+	updateprojects = invokeurl
+	[
+		url :"https://projectsapi.zoho.com/restapi/portal/" + PortalName + "/projects/" + projid + "/"
+		type :POST
+		parameters:mp
+		connection:"zohoprojectcreate"
+	];
+}
+else
+{
+	for each  rec in projectlist
+	{
+		if(rec.get("name") == foundProjectName)
+		{
+			projectId = rec.get("id");
+		}
+	}
+}
+if(projectId != null)
+{
+	updateData = Map();
+	updateData.put("Zoho_ProjectId",projectId.toString());
+	updataResponse = zoho.crm.updateRecord("Deals",dealId,updateData);
+}
+// info updateprojects;
