@@ -1,0 +1,21 @@
+response = invokeurl
+[
+	url :" https://projectsapi.zoho.in/restapi/portal/" + portalName + "/projects/" + projectId + "/tasks/"
+	type :GET
+	connection:"zohoprojectcreate"
+];
+// info response;
+taskdata = Map();
+taskdata = response.get("tasks");
+// info taskdata;
+tasklist = list();
+taskname = Map();
+for each  task in taskdata
+{
+	taskname.put("text",task.get("name"));
+	taskname.put("start_date",task.get("start_date_format"));
+	taskname.put("end_date",task.get("end_date_format"));
+	tasklist.add(taskname);
+}
+info tasklist;
+return "";
